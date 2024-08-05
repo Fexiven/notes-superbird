@@ -69,9 +69,16 @@ Please use `python amlogic_device.py -i ENV_FILE KERNEL_FILE INITRD_FILE DTB_FIL
 set `active_slot=_b` and **clear dtbo_b partition**. Otherwise custom dtb won't be loaded.
 
 1. Create empty `dtbo_b` and `boot_b` partitions by `dd` and restore to device.
-2. Restore new buildroot partition to `system_b`.
-3. Use `uboot_envs/env_b.txt` in this repo to boot. (`python amlogic_device.py -c ENV_FILE KERNEL_FILE DTB_FILE` to boot kernel + dtb from host)
+- `dd if=/dev/zero of=dtbo_b_empty bs=1M count=4`
+- `dd if=/dev/zero of=boot_b_empty bs=1M count=16`
+- `python superbird_tool.py --restore_partition dtbo_b dtbo_b_empty`
+- `python superbird_tool.py --restore_partition boot_b boot_b_empty`
 
+2. Restore new buildroot partition to `system_b`.
+- `python superbird_tool.py --restore_partition system_b rootfs.ext4`
+
+3. Use `uboot_envs/env_b.txt` in this repo to boot. (`python amlogic_device.py -c ENV_FILE KERNEL_FILE DTB_FILE` to boot kernel + dtb from host)
+- `python amlogic_device.py -c env_b.txt Image meson-g12a-superbird.dtb`
 ## Boot using custom partition table
 
 After **repartitioning** and restoring the rootfs as [`PARTITIONING.md`](partitioning/PARTITIONING.md).
